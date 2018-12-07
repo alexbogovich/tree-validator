@@ -1,5 +1,6 @@
 package io.github.alexbogovich.treevalidator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Slf4j
 public class TreeValidator {
     public static void main(String[] args) throws IOException, ParseException {
 
@@ -31,14 +33,14 @@ public class TreeValidator {
                 try {
                     output = TreeLineReader.getReversedInlineNodeTree(line);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("Exception:" + e.getMessage() + ". Line: " + line);
                 }
 
                 try {
                     bw.write(output);
                     bw.newLine();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("Unable write " + line + "to output file. Exception:" + e.getMessage());
                 }
             });
         }
