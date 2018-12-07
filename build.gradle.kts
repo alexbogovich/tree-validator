@@ -1,5 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
+    application
+    id("com.github.johnrengelman.shadow") version "4.0.3"
 }
 
 group = "io.github.alexbogovich"
@@ -14,6 +18,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.25")
     implementation("org.slf4j:slf4j-api:1.7.25")
     implementation("com.google.guava:guava:27.0.1-jre")
+    implementation("commons-cli:commons-cli:1.4")
     annotationProcessor("org.projectlombok:lombok:1.18.4")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.4")
     testImplementation("org.projectlombok:lombok:1.18.4")
@@ -24,6 +29,11 @@ dependencies {
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+application {
+    mainClassName = "io.github.alexbogovich.treevalidator.TreeValidator"
 }
 
 tasks.withType<Test> {
