@@ -26,9 +26,13 @@ class TreeLineReaderTest {
             "single(",
             "single)",
             "single,",
+            "single(1,2),",
+            "single(1,2)()",
             ",single",
             ")single",
-            "(single"
+            "(single",
+            "single())",
+
     })
     void singleErrorCases(String candidate) {
         assertThrows(RuntimeException.class, () -> TreeLineReader.getNodeTree(candidate));

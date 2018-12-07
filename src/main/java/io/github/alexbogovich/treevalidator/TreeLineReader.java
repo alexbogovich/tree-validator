@@ -10,9 +10,9 @@ import java.util.Deque;
 @UtilityClass
 public class TreeLineReader {
 
-    private static final char START_OF_SUBTREE = '(';
-    private static final char END_OF_SUBTREE = ')';
-    private static final char NODE_SEPARATOR = ',';
+    private static final char OPEN_BRACKET = '(';
+    private static final char CLOSE_BRACKET = ')';
+    private static final char COMMA = ',';
 
     public String getReversedInlineNodeTree(String line) {
         return NodeUtils.getTreeNodesInReverseOrder(getNodeTree(line));
@@ -22,30 +22,36 @@ public class TreeLineReader {
         Deque<Node> nodeStack = new ArrayDeque<>();
         StringBuilder sb = new StringBuilder();
         int bracketCount = 0;
+        TreeOperation lastOperation = TreeOperation.INIT;
 
         for (Character c: line.toCharArray()) {
-            if(c == START_OF_SUBTREE) {
+            if(c == OPEN_BRACKET) {
                 bracketCount++;
-                processHeadOfSubtree(nodeStack, sb.toString());
+                lastOperation = processHeadOfSubtree(nodeStack, sb.toString(), lastOperation);
                 sb = new StringBuilder();
-            } else if(c == END_OF_SUBTREE) {
+            } else if(c == CLOSE_BRACKET) {
                 bracketCount--;
-                processLastElementOfSubtree(nodeStack, sb.toString());
+                lastOperation = processLastElementOfSubtree(nodeStack, sb.toString(), lastOperation);
                 sb = new StringBuilder();
-            } else if(c == NODE_SEPARATOR) {
-                processSubtreeElement(nodeStack, sb.toString());
+            } else if(c == COMMA) {
+                lastOperation = processSubtreeElement(nodeStack, sb.toString(), lastOperation);
                 sb = new StringBuilder();
             } else {
                 sb.append(c);
+                lastOperation = TreeOperation.APPEND;
             }
 
             if ((bracketCount < 0)) {
-                throw new RuntimeException("Invalid close bracket");
+                throw new RuntimeException("Invalid close bracket placement");
             }
         }
 
         if ((bracketCount > 0)) {
             throw new RuntimeException("Missing close bracket");
+        }
+
+        if (TreeOperation.END.isInvalidPreviousOperation(lastOperation)) {
+            throw new RuntimeException("Invalid last operation");
         }
 
         if (nodeStack.size() == 0) {
@@ -55,19 +61,26 @@ public class TreeLineReader {
         return nodeStack.peek();
     }
 
-    public static void processSubtreeElement(Deque<Node> nodeStack, String nodeName) {
+    public static TreeOperation processSubtreeElement(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
+        if (TreeOperation.COMMA.isInvalidPreviousOperation(previousOperation)) {
+            throw new RuntimeException("Invalid operation order");
+        }
         if (nodeStack.size() == 0) {
             throw new RuntimeException("More than 1 root element");
         }
         if (nodeName.length() > 0) {
-            var node = Node.of(nodeName, nodeStack.size());
+            Node node = Node.of(nodeName, nodeStack.size());
             nodeStack.peekLast().getChildes().add(node);
         }
+        return TreeOperation.COMMA;
     }
 
-    public static void processHeadOfSubtree(Deque<Node> nodeStack, String nodeName) {
+    public static TreeOperation processHeadOfSubtree(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
+        if (TreeOperation.OPEN_BRACKET.isInvalidPreviousOperation(previousOperation)) {
+            throw new RuntimeException("Invalid operation order");
+        }
         if (nodeName.length() > 0) {
-            var node = Node.of(nodeName, nodeStack.size());
+            Node node = Node.of(nodeName, nodeStack.size());
             if(nodeStack.size() != 0) {
                 nodeStack.peekLast().getChildes().add(node);
             }
@@ -75,16 +88,21 @@ public class TreeLineReader {
         } else {
             throw new RuntimeException("Missing or empty node name");
         }
+        return TreeOperation.OPEN_BRACKET;
     }
 
-    public static void processLastElementOfSubtree(Deque<Node> nodeStack, String nodeName) {
+    public static TreeOperation processLastElementOfSubtree(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
+        if (TreeOperation.CLOSE_BRACKET.isInvalidPreviousOperation(previousOperation)) {
+            throw new RuntimeException("Invalid operation order");
+        }
         if (nodeName.length() > 0) {
-            var node = Node.of(nodeName, nodeStack.size());
+            Node node = Node.of(nodeName, nodeStack.size());
             nodeStack.peekLast().getChildes().add(node);
         }
         if (nodeStack.size() > 1) {
             nodeStack.pollLast();
         }
+        return TreeOperation.CLOSE_BRACKET;
     }
 
 }
