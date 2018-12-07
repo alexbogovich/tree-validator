@@ -26,26 +26,26 @@ public class TreeLineReader {
         for (Character c: line.toCharArray()) {
             if(c == START_OF_SUBTREE) {
                 bracketCount++;
-                processHeadOfSubtree(nodeStack, sb);
+                processHeadOfSubtree(nodeStack, sb.toString());
                 sb = new StringBuilder();
             } else if(c == END_OF_SUBTREE) {
                 bracketCount--;
-                processLastElementOfSubtree(nodeStack, sb);
+                processLastElementOfSubtree(nodeStack, sb.toString());
                 sb = new StringBuilder();
             } else if(c == NODE_SEPARATOR) {
-                processSubtreeElement(nodeStack, sb);
+                processSubtreeElement(nodeStack, sb.toString());
                 sb = new StringBuilder();
             } else {
                 sb.append(c);
             }
 
             if ((bracketCount < 0)) {
-                throw new RuntimeException();
+                throw new RuntimeException("Invalid close bracket");
             }
         }
 
         if ((bracketCount > 0)) {
-            throw new RuntimeException();
+            throw new RuntimeException("Missing close bracket");
         }
 
         if (nodeStack.size() == 0) {
@@ -55,31 +55,31 @@ public class TreeLineReader {
         return nodeStack.peek();
     }
 
-    public static void processSubtreeElement(Deque<Node> nodeStack, StringBuilder sb) {
+    public static void processSubtreeElement(Deque<Node> nodeStack, String nodeName) {
         if (nodeStack.size() == 0) {
-            throw new RuntimeException();
+            throw new RuntimeException("More than 1 root element");
         }
-        if (sb.length() > 0) {
-            var node = Node.of(sb.toString(), nodeStack.size());
+        if (nodeName.length() > 0) {
+            var node = Node.of(nodeName, nodeStack.size());
             nodeStack.peekLast().getChildes().add(node);
         }
     }
 
-    public static void processHeadOfSubtree(Deque<Node> nodeStack, StringBuilder sb) {
-        if (sb.length() > 0) {
-            var node = Node.of(sb.toString(), nodeStack.size());
+    public static void processHeadOfSubtree(Deque<Node> nodeStack, String nodeName) {
+        if (nodeName.length() > 0) {
+            var node = Node.of(nodeName, nodeStack.size());
             if(nodeStack.size() != 0) {
                 nodeStack.peekLast().getChildes().add(node);
             }
             nodeStack.add(node);
         } else {
-            throw new RuntimeException();
+            throw new RuntimeException("Missing or empty node name");
         }
     }
 
-    public static void processLastElementOfSubtree(Deque<Node> nodeStack, StringBuilder sb) {
-        if (sb.length() > 0) {
-            var node = Node.of(sb.toString(), nodeStack.size());
+    public static void processLastElementOfSubtree(Deque<Node> nodeStack, String nodeName) {
+        if (nodeName.length() > 0) {
+            var node = Node.of(nodeName, nodeStack.size());
             nodeStack.peekLast().getChildes().add(node);
         }
         if (nodeStack.size() > 1) {

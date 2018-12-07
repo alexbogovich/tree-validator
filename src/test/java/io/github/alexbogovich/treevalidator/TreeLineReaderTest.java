@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.slf4j.LoggerFactory.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class TreeLineReaderTest {
     private static final Logger log = getLogger(TreeLineReaderTest.class);
@@ -18,7 +18,7 @@ class TreeLineReaderTest {
     public void single() {
         String line = "single";
         Node node = TreeLineReader.getNodeTree(line);
-        assertEquals(Node.of("single", 0), node);
+        assertEquals(Node.of(line, 0), node);
     }
 
     @ParameterizedTest
@@ -57,10 +57,10 @@ class TreeLineReaderTest {
                                 List.of(
                                         Node.all("nest3", 2,
                                                 List.of(Node.of("nest4", 3))
-                                                ),
+                                        ),
                                         Node.of("nest5", 2)
                                 )
-                                ))
+                        ))
                 ),
                 node);
     }
