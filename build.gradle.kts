@@ -13,6 +13,7 @@ dependencies {
     implementation("org.projectlombok:lombok:1.18.4")
     implementation("org.slf4j:slf4j-simple:1.7.25")
     implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("com.google.guava:guava:27.0.1-jre")
     annotationProcessor("org.projectlombok:lombok:1.18.4")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.4")
     testImplementation("org.projectlombok:lombok:1.18.4")

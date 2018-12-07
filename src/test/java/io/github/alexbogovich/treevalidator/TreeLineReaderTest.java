@@ -64,4 +64,10 @@ class TreeLineReaderTest {
                 ),
                 node);
     }
+
+    @Test
+    void getReversionInlineNodeTree() {
+        String reversionInlineNodeTree = TreeLineReader.getReversedInlineNodeTree("aaa(bbb(sdf(1,2),ooo(4,5,fgh(6))),456)");
+        assertEquals("aaa(456,bbb(ooo(fgh(6),5,4),sdf(2,1)))", reversionInlineNodeTree);
+    }
 }

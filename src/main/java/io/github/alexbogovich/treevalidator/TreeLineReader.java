@@ -14,6 +14,10 @@ public class TreeLineReader {
     private static final char END_OF_SUBTREE = ')';
     private static final char NODE_SEPARATOR = ',';
 
+    public String getReversedInlineNodeTree(String line) {
+        return NodeUtils.getTreeNodesInReverseOrder(getNodeTree(line));
+    }
+
     public Node getNodeTree(String line) {
         Deque<Node> nodeStack = new ArrayDeque<>();
         StringBuilder sb = new StringBuilder();
