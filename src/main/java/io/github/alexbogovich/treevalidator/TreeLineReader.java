@@ -1,6 +1,7 @@
 package io.github.alexbogovich.treevalidator;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -8,6 +9,7 @@ import java.util.Deque;
 
 @SuppressWarnings("WeakerAccess")
 @UtilityClass
+@Slf4j
 public class TreeLineReader {
 
     private static final char OPEN_BRACKET = '(';
@@ -15,7 +17,13 @@ public class TreeLineReader {
     private static final char COMMA = ',';
 
     public String getReversedInlineNodeTree(String line) {
-        return NodeUtils.getTreeNodesInReverseOrder(getNodeTree(line));
+        String output = "ERROR";
+        try {
+            output = NodeUtils.getTreeNodesInReverseOrder(getNodeTree(line));
+        } catch (Exception e) {
+            log.error("Exception:" + e.getMessage() + ". Line: " + line);
+        }
+        return output;
     }
 
     public Node getNodeTree(String line) {
@@ -61,7 +69,7 @@ public class TreeLineReader {
         return nodeStack.peek();
     }
 
-    public static TreeOperation processSubtreeElement(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
+    public TreeOperation processSubtreeElement(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
         if (TreeOperation.COMMA.isInvalidPreviousOperation(previousOperation)) {
             throw new RuntimeException("Invalid operation order");
         }
@@ -75,7 +83,7 @@ public class TreeLineReader {
         return TreeOperation.COMMA;
     }
 
-    public static TreeOperation processHeadOfSubtree(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
+    public TreeOperation processHeadOfSubtree(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
         if (TreeOperation.OPEN_BRACKET.isInvalidPreviousOperation(previousOperation)) {
             throw new RuntimeException("Invalid operation order");
         }
@@ -91,7 +99,7 @@ public class TreeLineReader {
         return TreeOperation.OPEN_BRACKET;
     }
 
-    public static TreeOperation processLastElementOfSubtree(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
+    public TreeOperation processLastElementOfSubtree(Deque<Node> nodeStack, String nodeName, TreeOperation previousOperation) {
         if (TreeOperation.CLOSE_BRACKET.isInvalidPreviousOperation(previousOperation)) {
             throw new RuntimeException("Invalid operation order");
         }

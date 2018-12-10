@@ -23,22 +23,16 @@ public class TreeValidator {
             Files.createFile(out);
         }
 
-
         try (
-                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(out)));
-                BufferedReader bufferedReader = Files.newBufferedReader(input)
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(out)));
+                BufferedReader reader = Files.newBufferedReader(input)
         ) {
-            bufferedReader.lines().forEach(line -> {
-                String output = "ERROR";
-                try {
-                    output = TreeLineReader.getReversedInlineNodeTree(line);
-                } catch (Exception e) {
-                    log.error("Exception:" + e.getMessage() + ". Line: " + line);
-                }
+            reader.lines().forEach(line -> {
+                String output = TreeLineReader.getReversedInlineNodeTree(line);
 
                 try {
-                    bw.write(output);
-                    bw.newLine();
+                    writer.write(output);
+                    writer.newLine();
                 } catch (Exception e) {
                     log.error("Unable write " + line + "to output file. Exception:" + e.getMessage());
                 }

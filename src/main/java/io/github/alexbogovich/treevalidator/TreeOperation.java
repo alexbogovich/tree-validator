@@ -19,11 +19,11 @@ public enum TreeOperation {
             case OPEN_BRACKET:
                 return Set.of(CLOSE_BRACKET);
             case CLOSE_BRACKET:
-                return Set.of(COMMA, INIT);
+                return Set.of(COMMA, INIT, OPEN_BRACKET);
             case COMMA:
-                return Set.of(COMMA, INIT);
+                return Set.of(COMMA, INIT, OPEN_BRACKET);
             case END:
-                return Set.of(COMMA, OPEN_BRACKET, INIT);
+                return Set.of(COMMA, INIT, OPEN_BRACKET);
             default:
                 return Set.of();
         }

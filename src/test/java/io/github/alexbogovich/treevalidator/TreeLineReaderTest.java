@@ -21,23 +21,6 @@ class TreeLineReaderTest {
         assertEquals(Node.of(line, 0), node);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "single(",
-            "single)",
-            "single,",
-            "single(1,2),",
-            "single(1,2)()",
-            ",single",
-            ")single",
-            "(single",
-            "single())",
-
-    })
-    void singleErrorCases(String candidate) {
-        assertThrows(RuntimeException.class, () -> TreeLineReader.getNodeTree(candidate));
-    }
-
     @Test
     public void oneLevelNesting() {
         String line = "root(nest1,nest2)";
@@ -73,5 +56,62 @@ class TreeLineReaderTest {
     void getReversionInlineNodeTree() {
         String reversionInlineNodeTree = TreeLineReader.getReversedInlineNodeTree("aaa(bbb(sdf(1,2),ooo(4,5,fgh(6))),456)");
         assertEquals("aaa(456,bbb(ooo(fgh(6),5,4),sdf(2,1)))", reversionInlineNodeTree);
+    }
+
+    @Test
+    void getErrorReversionInlineNodeTree() {
+        String reversionInlineNodeTree = TreeLineReader.getReversedInlineNodeTree("a,a(a),a");
+        assertEquals("ERROR", reversionInlineNodeTree);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "a(",
+            "a,a(a),a",
+            "a)",
+            "a,",
+            "a(1,2),",
+            "a(1,2)()",
+            ",a",
+            ")a",
+            "(a",
+            "a())",
+            "a(,a)",
+            "a((a)",
+            "a(a))",
+            "a(a(a)",
+            "a(,a),",
+            "a(,a,)",
+            "a,(,a,)",
+            ",a(,a,)",
+            "a(a,)",
+            "a(a,)a",
+            "a()a",
+            "a(a",
+            "a)a",
+            "a,a",
+            "a,)a",
+            "a),a",
+            "a)a,a",
+            "a(,a",
+            "a(a,a",
+            "a)(,a",
+            "a)a(,a",
+            "a(),a",
+            "a()a,a",
+            "a,(a",
+            "a,a(a",
+            "a,)(a",
+            "a,)a(a",
+            "a,()a",
+            "a,(a)a",
+            "",
+            "a,(a)",
+            ",(a)",
+            ",()",
+            "a(a,(b))"
+    })
+    void errorCases(String candidate) {
+        assertThrows(RuntimeException.class, () -> TreeLineReader.getNodeTree(candidate));
     }
 }
